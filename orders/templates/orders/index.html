@@ -1,0 +1,158 @@
+{% extends "orders/base.html" %}
+
+{% block title %}
+P&P House menu
+{% endblock %}
+
+{% block body %}
+<div class="container bg-white py-3 mb-5 border rounded">
+  {% if request.user.is_authenticated %}
+  <h1>Welcome {{ request.user.first_name }}!</h1>
+  <p>Please check out our delicious menu and place your order <a href="{% url 'orders:order' %}">here</a>.</p>
+  {% else %}
+  <h1>Welcome Guest!</h1>
+  <p>Please check out our delicious menu and <a href="{% url 'users:login' %}">login</a> to place your order.</p>
+  {% endif %}
+  <h3 class="meal-type-regular-pizza py-2 pl-2 my-2 rounded">Regular Pizza</h3>
+  <div class="row">
+    <div class="col-sm-3">
+      <h4>&nbsp;</h4>
+    </div>
+    <div class="col-sm-2">
+      <h4>Small</h4>
+    </div>
+    <div class="col-sm-2">
+      <h4>Large</h4>
+    </div>
+  </div>
+  {% for key, values in regular_pizzas.items %}
+  <div class="row">
+    <div class="col-sm-3">
+      {{ key }}
+    </div>
+    <div class="col-sm-2">
+      ${{ values.Small|floatformat:2|default:"----" }}
+    </div>
+    <div class="col-sm-2">
+      ${{ values.Large|floatformat:2|default:"----" }}
+    </div>
+  </div>
+  {% endfor %}
+  <h3 class="meal-type-sicilian-pizza py-2 pl-2 my-2 rounded">Sicilian Pizza</h3>
+  <div class="row">
+    <div class="col-sm-3">
+      <h4>&nbsp;</h4>
+    </div>
+    <div class="col-sm-2">
+      <h4>Small</h4>
+    </div>
+    <div class="col-sm-2">
+      <h4>Large</h4>
+    </div>
+  </div>
+  {% for key, values in sicilian_pizzas.items %}
+  <div class="row">
+    <div class="col-sm-3">
+      {{ key }}
+    </div>
+    <div class="col-sm-2">
+      ${{ values.Small|floatformat:2|default:"----" }}
+    </div>
+    <div class="col-sm-2">
+      ${{ values.Large|floatformat:2|default:"----" }}
+    </div>
+  </div>
+  {% endfor %}
+  <h5 class="meal-type-toppings py-2 pl-2 my-2 mx-3 rounded">Toppings</h5>
+  <div class="row mx-3">
+    {% for topping in toppings %}
+    <div class="col-sm-4">
+      {{ topping.name }}
+    </div>
+      {% endfor %}
+  </div>
+  <h3 class="meal-type-subs py-2 pl-2 my-2 rounded">Subs</h3>
+  <div class="row">
+    <div class="col-sm-3">
+      <h4>&nbsp;</h4>
+    </div>
+    <div class="col-sm-2">
+      <h4>Small</h4>
+    </div>
+    <div class="col-sm-2">
+      <h4>Large</h4>
+    </div>
+  </div>
+  {% for key, values in subs.items %}
+  <div class="row">
+    <div class="col-sm-3">
+      {{ key }}
+    </div>
+    <div class="col-sm-2">
+      ${{ values.Small|floatformat:2|default:"----" }}
+    </div>
+    <div class="col-sm-2">
+      ${{ values.Large|floatformat:2|default:"----" }}
+    </div>
+  </div>
+  {% endfor %}
+  <h5 class="meal-type-sub-additions py-2 pl-2 my-2 mx-3 rounded">Sub additions</h5>
+  {% for sub_addition in sub_additions %}
+  <div class="row mx-3">
+    <div class="col-sm-3">
+      {{ sub_addition.name }}
+    </div>
+    <div class="col-sm-4">
+      +${{ sub_addition.price|floatformat:2|default:"----" }}
+    </div>
+  </div>
+  {% endfor %}
+  <h3 class="meal-type-pasta py-2 pl-2 my-2 rounded">Pasta</h3>
+  {% for pasta in pastas %}
+  <div class="row">
+    <div class="col-sm-3">
+      {{ pasta.meal__name }}
+    </div>
+    <div class="col-sm-4">
+      ${{ pasta.price|floatformat:2|default:"----" }}
+    </div>
+  </div>
+  {% endfor %}
+  <h3 class="meal-type-salads py-2 pl-2 my-2 rounded">Salads</h3>
+  {% for salad in salads %}
+  <div class="row">
+    <div class="col-sm-3">
+      {{ salad.meal__name }}
+    </div>
+    <div class="col-sm-4">
+      ${{ salad.price|floatformat:2|default:"----" }}
+    </div>
+  </div>
+  {% endfor %}
+  <h3 class="meal-type-platters py-2 pl-2 my-2 rounded">Dinner Platters</h3>
+  <div class="row">
+    <div class="col-sm-3">
+      <h4>&nbsp;</h4>
+    </div>
+    <div class="col-sm-2">
+      <h4>Small</h4>
+    </div>
+    <div class="col-sm-2">
+      <h4>Large</h4>
+    </div>
+  </div>
+  {% for key, values in dinner_platters.items %}
+  <div class="row">
+    <div class="col-sm-3">
+      {{ key }}
+    </div>
+    <div class="col-sm-2">
+      ${{ values.Small|floatformat:2|default:"----" }}
+    </div>
+    <div class="col-sm-2">
+      ${{ values.Large|floatformat:2|default:"----" }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "users/base.html" %}
+
+{% block title %}
+P&P House login page
+{% endblock %}
+
+{% block body %}
+<div class="container bg-white py-3 my-5 border rounded">
+  <div class="row justify-content-center">
+      <div class="col-sm-4 py-1 bg-dark rounded-top text-light"><h1 class="">P&P House User Login</h1></div>
+  </div>
+  <div class="row justify-content-center">
+      <div class="col-sm-4 py-1 bg-light border rounded-bottom">
+          <form action="{% url 'users:login' %}" method="post" id="login_form">
+              {% csrf_token %}
+              <div class="form-group">
+                  {{ form.username.label_tag }}
+                  <input class="form-control" type="text" name="username" id="id_username" value="{{ form.username.value|default_if_none:"" }}" autofocus />
+                  <small class="text-danger">{{ form.username.errors }}</small>
+              </div>
+              <div class="form-group">
+                  {{ form.password.label_tag }}
+                  <input class="form-control" type="password" name="password" id="id_password" />
+                  <small class="text-danger">{{ form.password.errors }}</small>
+              </div>
+              {% if message %}
+              <div class="form-group">
+                <small class="text-danger">{{ message }}</small>
+              </div>
+              {% endif %}
+              <div class="form-group text-center">
+                <button class="btn btn-primary btn-block" type="submit" form="login_form">Login</button>
+              </div>
+          </form>
+      </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-sm-4">
+      <small>Don't have an account? <a href="{% url 'users:register' %}">Register here.</a></small>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% load static %}
+<div class="container">
+  <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+    <a class="navbar-brand" href="/"><img src="{% static 'chef.png' %}" alt="Logo" style="width:48px;" class="mr-sm-2">P&P House</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        {% if request.user.is_authenticated %}
+        <li class="navbar-item px-2">
+          <a class="nav-link" href="{% url 'orders:order' %}">Order</a>
+        </li>
+        {% endif %}
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        {% if request.user.is_authenticated %}
+        <li class="navbar-text px-4">
+          Logged in as <span class="text-white">{{ request.user.username }}</span>
+        </li>
+        {% if request.user.is_superuser %}
+        <li class="navbar-item px-2">
+          <a class="nav-link" href="/admin">Site administration</a>
+        </li>
+        {% endif %}
+        <li class="navbar-item px-2">
+          <a class="nav-link" href="{% url 'users:logout' %}">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item px-2">
+            <a class="nav-link" href="{% url 'users:login' %}">Login</a>
+        </li>
+         <li class="nav-item px-2">
+           <a class="nav-link" href="{% url 'users:register' %}">Register</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+</div>

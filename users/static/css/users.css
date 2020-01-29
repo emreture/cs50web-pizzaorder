@@ -1,0 +1,46 @@
+:root {
+  --red-orange: #ff2a1e;
+  --selective-yellow: #ffb700;
+  --pear: #d3e11d;
+  --lime-green: #46c230;
+}
+
+body {
+  margin-bottom: 100px;
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+.bg-red-orange {
+  background-color: var(--red-orange);
+}
+
+.bg-selective-yellow {
+  background-color: var(--selective-yellow);
+}
+
+.bg-pear {
+  background-color: var(--pear);
+}
+
+.bg-lime-green {
+  background-color: var(--lime-green);
+}
+
+.text-red-orange {
+  color: var(--red-orange);
+}
+
+.text-selective-yellow {
+  color: var(--selective-yellow);
+}
+
+.text-pear {
+  color: var(--pear);
+}
+
+.text-lime-green {
+  color: var(--lime-green);
+}
