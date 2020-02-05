@@ -1,0 +1,17 @@
+{% extends "orders/base.html" %}
+{% load static %}
+{% block title %}
+P&P House order receipt
+{% endblock %}
+
+{% block body %}
+
+<div class="container bg-white py-3 my-3 border rounded">
+  <h1>Order received!</h1>
+  <p><img src="{% static 'delivery-truck.png' %}" alt="delivery truck" style="width:128px;"></p>
+  <p>
+    Your <a href="{% url 'orders:my_orders' order_no %}">order</a> has been received. You can check the status of your order on <a href="{% url 'orders:my_orders' order_no %}">my orders</a> page.
+  </p>
+</div>
+
+{% endblock %}

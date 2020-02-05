@@ -1,0 +1,31 @@
+{% extends "orders/base.html" %}
+{% load static %}
+{% block title %}
+P&P House cart
+{% endblock %}
+
+{% block body %}
+<script src="{% static 'js/cart.js' %}"></script>
+<div class="container">
+  <h1>My cart</h1>
+</div>
+<div class="container bg-white py-3 my-3 border rounded">
+  <form id="cart" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="remove_item" value="">
+    {% include "orders/includes/cart-items.html" %}
+    {% if cart_items %}
+    <div class="row mt-1">
+      <div class="col-sm-5 h3 text-right">
+        Total: ${{ cart_cost.price__sum|floatformat:2 }}
+      </div>
+    </div>
+    <div class="row mt-1">
+      <div class="col-sm-5 text-center">
+        <a href="{% url 'orders:checkout' %}" class="btn btn-primary">Checkout</a>
+      </div>
+    </div>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}

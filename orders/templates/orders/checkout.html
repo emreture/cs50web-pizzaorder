@@ -1,0 +1,65 @@
+{% extends "orders/base.html" %}
+{% load static %}
+{% block title %}
+P&P House checkout
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <h1>Checkout</h1>
+</div>
+<div class="container bg-white py-3 my-3 border rounded">
+  <div class="row">
+    <div class="col">
+      <h5 class="text-primary">Customer information</h5>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-2">
+      First name:
+    </div>
+    <div class="col">
+      {{ request.user.first_name }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-2">
+      Last name:
+    </div>
+    <div class="col">
+      {{ request.user.last_name }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-2">
+      E-mail:
+    </div>
+    <div class="col">
+      {{ request.user.email }}
+    </div>
+  </div>
+</div>
+<div class="container bg-white py-3 my-3 border rounded">
+  <div class="row">
+    <div class="col">
+      <h5 class="text-primary">Order information</h5>
+    </div>
+  </div>
+  {% include "orders/includes/cart-items.html" %}
+  {% if cart_items %}
+  <div class="row mt-1">
+    <div class="col-sm-5 h3 text-right">
+      Total: ${{ cart_cost.price__sum|floatformat:2 }}
+    </div>
+  </div>
+  <div class="row mt-1">
+    <div class="col-sm-5 text-center">
+      <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Confirm and Pay</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,249 @@
+{% extends "orders/base.html" %}
+{% load static %}
+{% block title %}
+P&P House order page
+{% endblock %}
+
+{% block body %}
+<script src="{% static 'js/orders.js' %}"></script>
+<div class="container">
+  <h1>Order page</h1>
+</div>
+<!--Regular pizza-->
+<div class="container bg-white py-3 my-3 border rounded">
+  <form method="post" id="regular-pizza-form">
+    {% csrf_token %}
+    <div class="row px-2">
+      <div class="col-sm-3 meal-type-regular-pizza py-2 px-2 rounded">
+        <span class="">Regular Pizza</span>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="col-sm-3">
+        <select class="form-control form-control-sm" id="regular-pizza-selection">
+          {% for menu_item in regular_pizzas %}
+          <option value="{{ menu_item.id }}" data-toppings_count="{{ menu_item.toppings_count }}" data-price="{{ menu_item.price }}">{{ menu_item.meal.name }}, {{ menu_item.meal_size }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group col-sm-3">
+        <span id="regular-pizza-toppings-count">Cheese without toppings.</span>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="col-auto">
+        {% for topping in toppings %}
+        <div class="form-check form-check-inline">
+          <input class="form-check-input regular-pizza-topping" type="checkbox" id="id_regular_{{ topping.name }}" value="{{ topping.id }}" disabled="disabled">
+          <label class="form-check-label badge badge-light" for="id_regular_{{ topping.name }}">{{ topping.name }}</label>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2 text-center">
+        <img src="{% static 'box.png' %}" alt="Price" style="width:48px;">
+        <span id="regular-pizza-price" class="font-weight-bold text-secondary pl-3 h4"></span>
+      </div>
+      <div class="col-sm-3">
+        <button class="btn btn-primary" type="submit" name="regular-pizza-submit" id="regular-pizza-submit">Add to cart</button>
+      </div>
+    </div>
+  </form>
+</div>
+<!--Sicilian pizza-->
+<div class="container bg-white py-3 my-3 border rounded">
+  <form method="post" id="sicilian-pizza-form">
+    <div class="row px-2">
+      <div class="col-sm-3 meal-type-sicilian-pizza py-2 px-2 rounded">
+        <span class="">Sicilian Pizza</span>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="col-sm-3">
+        <select class="form-control form-control-sm" id="sicilian-pizza-selection">
+          {% for menu_item in sicilian_pizzas %}
+          <option value="{{ menu_item.id }}" data-toppings_count="{{ menu_item.toppings_count }}" data-price="{{ menu_item.price }}">{{ menu_item.meal.name }}, {{ menu_item.meal_size }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group col-sm-3">
+        <span id="sicilian-pizza-toppings-count">Cheese without toppings.</span>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="col-auto">
+        {% for topping in toppings %}
+        <div class="form-check form-check-inline">
+          <input class="form-check-input sicilian-pizza-topping" type="checkbox" id="id_sicilian_{{ topping.name }}" value="{{ topping.id }}" disabled="disabled">
+          <label class="form-check-label badge badge-light" for="id_sicilian_{{ topping.name }}">{{ topping.name }}</label>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2 text-center">
+        <img src="{% static 'box.png' %}" alt="Price" style="width:48px;">
+        <span id="sicilian-pizza-price" class="font-weight-bold text-secondary pl-3 h4"></span>
+      </div>
+      <div class="col-sm-3">
+        <button class="btn btn-primary" type="submit" name="sicilian-pizza-submit" id="sicilian-pizza-submit">Add to cart</button>
+      </div>
+    </div>
+  </form>
+</div>
+<!--Subs-->
+<div class="container bg-white py-3 my-3 border rounded">
+  <form method="post" id="subs-form">
+    <div class="row px-2">
+      <div class="col-sm-3 meal-type-subs py-2 px-2 rounded">
+        <span class="">Subs</span>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="col-sm-3">
+        <select class="form-control form-control-sm" id="subs-selection">
+          {% for menu_item in subs %}
+          <option value="{{ menu_item.id }}" data-price="{{ menu_item.price }}">{{ menu_item.meal.name }}, {{ menu_item.meal_size }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group col-sm-4">
+        <span id="">You can choose additions for your sub.</span>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="col-auto">
+        {% for sub_addition in sub_additions %}
+        <div class="form-check form-check-inline">
+          <input class="form-check-input sub-addition" type="checkbox" id="id_sub_addition_{{ sub_addition.name }}" value="{{ sub_addition.id }}" data-price="{{ sub_addition.price }}">
+          <label class="form-check-label badge badge-light" for="id_sub_addition_{{ sub_addition.name }}">{{ sub_addition.name }}</label>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2 text-center">
+        <img src="{% static 'box.png' %}" alt="Price" style="width:48px;">
+        <span id="subs-price" class="font-weight-bold text-secondary pl-3 h4"></span>
+      </div>
+      <div class="col-sm-3">
+        <button class="btn btn-primary" type="submit" name="subs-submit" id="subs-submit">Add to cart</button>
+      </div>
+    </div>
+  </form>
+</div>
+<!--Pasta-->
+<div class="container bg-white py-3 my-3 border rounded">
+  <form method="post" id="pasta-form">
+    <div class="row px-2">
+      <div class="col-sm-3 meal-type-pasta py-2 px-2 rounded">
+        <span class="">Pasta</span>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="col-sm-3">
+        <select class="form-control form-control-sm" id="pasta-selection">
+          {% for menu_item in pastas %}
+          <option value="{{ menu_item.id }}" data-price="{{ menu_item.price }}">{{ menu_item.meal.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group col-sm-3">
+        <span id=""></span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2 text-center">
+        <img src="{% static 'box.png' %}" alt="Price" style="width:48px;">
+        <span id="pasta-price" class="font-weight-bold text-secondary pl-3 h4"></span>
+      </div>
+      <div class="col-sm-3">
+        <button class="btn btn-primary" type="submit" name="pasta-submit" id="pasta-submit">Add to cart</button>
+      </div>
+    </div>
+  </form>
+</div>
+<!--Salads-->
+<div class="container bg-white py-3 my-3 border rounded">
+  <form method="post" id="salad-form">
+    <div class="row px-2">
+      <div class="col-sm-3 meal-type-salads py-2 px-2 rounded">
+        <span class="">Salads</span>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="col-sm-3">
+        <select class="form-control form-control-sm" id="salad-selection">
+          {% for menu_item in salads %}
+          <option value="{{ menu_item.id }}" data-price="{{ menu_item.price }}">{{ menu_item.meal.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group col-sm-3">
+        <span id=""></span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2 text-center">
+        <img src="{% static 'box.png' %}" alt="Price" style="width:48px;">
+        <span id="salad-price" class="font-weight-bold text-secondary pl-3 h4"></span>
+      </div>
+      <div class="col-sm-3">
+        <button class="btn btn-primary" type="submit" name="salad-submit" id="salad-submit">Add to cart</button>
+      </div>
+    </div>
+  </form>
+</div>
+<!--Dinner platters-->
+<div class="container bg-white py-3 my-3 border rounded">
+  <form method="post" id="platter-form">
+    <div class="row px-2">
+      <div class="col-sm-3 meal-type-platters py-2 px-2 rounded">
+        <span class="">Dinner Platters</span>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="col-sm-3">
+        <select class="form-control form-control-sm" id="platter-selection">
+          {% for menu_item in platters %}
+          <option value="{{ menu_item.id }}" data-price="{{ menu_item.price }}">{{ menu_item.meal.name }}, {{ menu_item.meal_size }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group col-sm-3">
+        <span id=""></span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2 text-center">
+        <img src="{% static 'box.png' %}" alt="Price" style="width:48px;">
+        <span id="platter-price" class="font-weight-bold text-secondary pl-3 h4"></span>
+      </div>
+      <div class="col-sm-3">
+        <button class="btn btn-primary" type="submit" name="platter-submit" id="platter-submit">Add to cart</button>
+      </div>
+    </div>
+  </form>
+</div>
+<!--Modal window-->
+<div id="modal-info" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-title">Information</h5>
+                <button type="button" class="close" id="close-modal-x" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="close-modal-button" data-dismiss="modal">Close</button>
+                <a href="{% url 'orders:cart' %}" class="btn btn-primary">Go to cart</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -13,6 +13,7 @@ P&P House login page
       <div class="col-sm-4 py-1 bg-light border rounded-bottom">
           <form action="{% url 'users:login' %}" method="post" id="login_form">
               {% csrf_token %}
+              <input type="hidden" name="next" value="{{ next }}">
               <div class="form-group">
                   {{ form.username.label_tag }}
                   <input class="form-control" type="text" name="username" id="id_username" value="{{ form.username.value|default_if_none:"" }}" autofocus />

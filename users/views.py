@@ -38,18 +38,24 @@ def register_user(request):
 def login_user(request):
     form = LoginForm(request.POST or None)
     message = None
+    next_url = request.GET.get('next', None)
     if form.is_valid():
         username = form.cleaned_data.get("username")
         password = form.cleaned_data.get("password")
+        next_url = request.POST.get('next', None)
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect("orders:index")
+            if next_url:
+                return redirect(next_url)
+            else:
+                return redirect("orders:index")
         else:
             message = "Incorrect username and/or password!"
     context = {
         "form": form,
-        "message": message
+        "message": message,
+        "next": next_url
     }
     return render(request, "users/login.html", context)
 

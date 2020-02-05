@@ -1,0 +1,39 @@
+{% for item in cart_items %}
+<div class="row px-2 pt-1">
+  <div class="col-sm-1 text-right">
+    {{ forloop.counter }}.
+  </div>
+  <div class="col-sm-3">
+    {{ item.menu_item }}
+    {% if item.toppings.all %}
+    <ul class="list-unstyled small">
+    {% for topping in item.toppings.all %}
+      <li class="">
+      &bull; {{ topping }}
+      </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% if item.sub_additions.all %}
+    <ul class="list-unstyled small">
+    {% for sub_addition in item.sub_additions.all %}
+      <li class="">
+      + {{ sub_addition }}
+      </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  <div class="col-sm-1">
+    ${{ item.price|floatformat:2 }}
+  </div>
+  <div class="col-auto">
+    {% if remove_button %}
+    <button class="btn btn-danger btn-sm remove-button" type="button" data-cart_item_id="{{ item.id }}">Remove item</button>
+    {% endif %}
+  </div>
+</div>
+{% empty %}
+<h3 class="alert alert-danger">Your cart is empty.</h3>
+<p>Please check out our delicious <a href ="{% url 'orders:index' %}">menu</a> and place your order <a href="{% url 'orders:order' %}">here</a>.</p>
+{% endfor %}
