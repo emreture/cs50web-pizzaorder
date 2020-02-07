@@ -297,7 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return false;
   }
 
-  //document.querySelector('#regular-pizza-selection').selectedIndex = 0;
   updatePizzaSelection('regular-pizza');
   updatePizzaSelection('sicilian-pizza');
   updateSubsSelection();

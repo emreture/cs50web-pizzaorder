@@ -1,4 +1,4 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -69,7 +69,6 @@ def add_to_cart(request):
     toppings_list = list()
     sub_additions = form.get('sub_additions_list', None)
     sub_additions_list = list()
-    print(user_id, menu_item_id, toppings, sub_additions)
     if user_id is None or menu_item_id is None:
         return JsonResponse({'success': False, 'message': 'No user or menu item.'}, status=400)
     try:
@@ -99,7 +98,6 @@ def add_to_cart(request):
         item.sub_additions.add(sub_addition)
         item.price += sub_addition.price
     item.save()
-    print(item)
     cart_items_count = Cart.objects.filter(user=user).count()
     return JsonResponse({'success': True, 'message': 'Item added to cart.', 'cart_items_count': cart_items_count, 'item': str(menu_item)}, status=200)
 
@@ -130,7 +128,6 @@ def checkout(request):
         new_order.user = request.user
         new_order.is_completed = False
         new_order.save()
-        print("New order", new_order)
         for cart_item in cart_items:
             order_item = OrderItem()
             order_item.order = new_order
@@ -141,7 +138,6 @@ def checkout(request):
             for sub_addition in cart_item.sub_additions.all():
                 order_item.sub_additions.add(sub_addition)
             order_item.save()
-            print(cart_item, "->", order_item)
             cart_item.delete()
         context = {
             "order_no": new_order.id
@@ -157,5 +153,108 @@ def checkout(request):
 
 
 @login_required(login_url="users:login")
-def my_orders(request, order_id):
-    pass
+def orders(request, order_id=None):
+    context = {
+        "cart_items_count": Cart.objects.filter(user=request.user).count()
+    }
+    if order_id is None:
+        if request.method == "POST":
+            form = request.POST
+            order_id = form.get("order_id")
+            action = form.get("action")
+            _filter = form.get("filter")
+            try:
+                _order = Order.objects.get(pk=order_id)
+            except Order.DoesNotExist:
+                return HttpResponseNotFound("<h1>Order not found!</h1>")
+            context['filter_sel'] = _filter
+            if action == "mark_as_completed":
+                _order.is_completed = True
+                _order.save()
+            elif action == "mark_as_pending":
+                _order.is_completed = False
+                _order.save()
+        if request.user.is_superuser:
+            context['orders'] = Order.objects.all()
+        else:
+            context['orders'] = Order.objects.filter(user=request.user)
+        return render(request, "orders/order-list.html", context)
+    else:
+        try:
+            _order = Order.objects.get(pk=order_id)
+        except Order.DoesNotExist:
+            return HttpResponseNotFound("<h1>Order not found!</h1>")
+        if request.user != _order.user and not request.user.is_superuser:
+            return HttpResponseNotFound("<h1>Order not found!</h1>")
+        if request.method == "POST":
+            form = request.POST
+            action = form.get("action")
+            if action == "mark_as_completed":
+                _order.is_completed = True
+                _order.save()
+            elif action == "mark_as_pending":
+                _order.is_completed = False
+                _order.save()
+        context['order_items'] = OrderItem.objects.filter(order=_order)
+        context['order'] = _order
+        return render(request, "orders/order-detail.html", context)
+
+
+@require_POST
+def re_order(request):
+    form = request.POST
+    order_id = form.get("order_id")
+    try:
+        _order = Order.objects.get(pk=order_id)
+    except Order.DoesNotExist:
+        return HttpResponseNotFound("<h1>Order not found!</h1>")
+    order_items = OrderItem.objects.filter(order=_order)
+    cart_items = Cart.objects.filter(user=request.user)
+    for item in cart_items:
+        item.delete()
+    for item in order_items:
+        _cart = Cart()
+        _cart.user = request.user
+        _cart.menu_item = item.menu_item
+        _cart.price = item.menu_item.price
+        _cart.save()
+        for topping in item.toppings.all():
+            _cart.toppings.add(topping)
+        for sub_addition in item.sub_additions.all():
+            _cart.sub_additions.add(sub_addition)
+            _cart.price += sub_addition.price
+        _cart.save()
+
+    # form = request.POST
+    # order_id = form.get("order_id")
+    # _order = Order.objects.get(pk=order_id)
+    # order_items = OrderItem.objects.filter(order=_order)
+    # new_order = Order()
+    # new_order.user = request.user
+    # new_order.is_completed = False
+    # new_order.save()
+    # for item in order_items:
+    #     order_item = OrderItem()
+    #     order_item.order = new_order
+    #     order_item.menu_item = item.menu_item
+    #     order_item.save()
+    #     for topping in item.toppings.all():
+    #         order_item.toppings.add(topping)
+    #     for sub_addition in item.sub_additions.all():
+    #         order_item.sub_additions.add(sub_addition)
+    #     order_item.save()
+    #     print(item, "->", order_item)
+    # context = {
+    #     "order_no": new_order.id
+    # }
+    # return render(request, "orders/order-receipt.html", context)
+
+    # context = {
+    #     "cart_items_count": Cart.objects.filter(user=request.user).count(),
+    #     "cart_items": Cart.objects.filter(user=request.user),
+    #     "cart_cost": Cart.objects.filter(user=request.user).aggregate(Sum('price')),
+    #     "remove_button": False
+    # }
+    # return render(request, "orders/checkout.html", context)
+
+    return redirect("orders:checkout")

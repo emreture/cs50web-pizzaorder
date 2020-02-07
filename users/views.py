@@ -46,7 +46,7 @@ def login_user(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            if next_url:
+            if next_url and next_url != "None":
                 return redirect(next_url)
             else:
                 return redirect("orders:index")

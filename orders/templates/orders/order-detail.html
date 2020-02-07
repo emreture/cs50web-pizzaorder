@@ -1,0 +1,84 @@
+{% extends "orders/base.html" %}
+{% load static %}
+{% block title %}
+P&P House order details
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <h1>Order details</h1>
+</div>
+<div class="container bg-white py-3 my-3 border rounded">
+  <div class="row px-2 pt-1">
+    <div class="col-auto">
+      <h5>{{ order.user.username }}'s order on {{ order.order_date }}</h5>
+    </div>
+  </div>
+  <div class="row px-2 pt-1">
+    <div class="col-auto">
+      {% if order.is_completed %}
+      <h5 class="text-primary">Order completed.</h5>
+      {% else %}
+      <h5 class="text-danger">Order pending.</h5>
+      {% endif %}
+    </div>
+  </div>
+  {% for item in order_items %}
+  <div class="row px-2 pt-1">
+    <div class="col-sm-1 text-right">
+      {{ forloop.counter }}.
+    </div>
+    <div class="col-sm-3">
+      {{ item.menu_item }}
+      {% if item.toppings.all %}
+      <ul class="list-unstyled small">
+      {% for topping in item.toppings.all %}
+        <li class="">
+        &bull; {{ topping }}
+        </li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+      {% if item.sub_additions.all %}
+      <ul class="list-unstyled small">
+      {% for sub_addition in item.sub_additions.all %}
+        <li class="">
+        + {{ sub_addition }}
+        </li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+  {% if request.user.is_superuser %}
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="order_id" value="{{ order.id }}">
+    <div class="row px-2 pt-4">
+      <div class="col-sm-4">
+        {% if order.is_completed %}
+        <button type="submit" class="btn btn-secondary mark-button">Mark order as pending</button>
+        <input type="hidden" name="action" value="mark_as_pending">
+        {% else %}
+        <button type="submit" class="btn btn-primary mark-button">Mark order as completed</button>
+        <input type="hidden" name="action" value="mark_as_completed">
+        {% endif %}
+      </div>
+    </div>
+  </form>
+  {% else %}
+  {% if order.is_completed %}
+  <form action="{% url 'orders:re_order' %}" method="post">
+    {% csrf_token %}
+    <div class="row px-2 pt-4">
+      <div class="col-sm-4">
+        <button type="submit" class="btn btn-primary mark-button">Order again</button>
+        <input type="hidden" name="order_id" value="{{ order.id }}">
+      </div>
+    </div>
+  </form>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

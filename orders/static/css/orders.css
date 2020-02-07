@@ -68,3 +68,7 @@
 .meal-type-platters {
   background-color: var(--lime-green);
 }
+
+.hide {
+  display: none;
+}

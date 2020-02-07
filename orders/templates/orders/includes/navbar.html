@@ -12,7 +12,14 @@
         </li>
         {% if request.user.is_authenticated %}
         <li class="navbar-item px-2">
-          <a class="nav-link" href="{% url 'orders:order' %}">Order meal</a>
+          <a class="nav-link" href="{% url 'orders:order' %}">Order page</a>
+        </li>
+        <li class="navbar-item px-2">
+          {% if request.user.is_superuser %}
+          <a class="nav-link" href="{% url 'orders:orders' %}">View orders</a>
+          {% else %}
+          <a class="nav-link" href="{% url 'orders:orders' %}">My orders</a>
+          {% endif %}
         </li>
         {% if request.user.is_superuser %}
         <li class="navbar-item px-2">

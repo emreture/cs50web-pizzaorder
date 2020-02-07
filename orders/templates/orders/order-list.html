@@ -1,0 +1,97 @@
+{% extends "orders/base.html" %}
+{% load static %}
+{% block title %}
+P&P House orders
+{% endblock %}
+
+{% block body %}
+<script src="{% static 'js/order-list.js' %}"></script>
+<div class="container">
+  <h1>Orders</h1>
+</div>
+{% if request.user.is_superuser %}
+<form id="admin-form" method="post">
+  {% csrf_token %}
+  <input type="hidden" name="order_id" value="">
+  <input type="hidden" name="action" value="">
+  <input type="hidden" name="filter" value="">
+{% endif %}
+  <div class="container bg-white py-3 my-3 border rounded">
+    <p>Please click on the order number to see the order details.</p>
+    <div class="row my-4">
+      <div class="col-sm-2">
+        Filter orders list:
+      </div>
+      <div class="col-sm-3">
+        <select class="form-control form-control-sm" id="filter-status">
+          {% if filter_sel == "all" %}
+          <option value="all" selected>Show all orders</option>
+          {% else %}
+          <option value="all">Show all orders</option>
+          {% endif %}
+          {% if filter_sel == "completed" %}
+          <option value="completed" selected>Show completed orders</option>
+          {% else %}
+          <option value="completed">Show completed orders</option>
+          {% endif %}
+          {% if filter_sel == "pending" %}
+          <option value="pending" selected>Show pending orders</option>
+          {% else %}
+          <option value="pending">Show pending orders</option>
+          {% endif %}
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-1 h5">
+        #
+      </div>
+      {% if request.user.is_superuser %}
+      <div class="col-sm-2 h5">
+        User
+      </div>
+      {% endif %}
+      <div class="col-sm-3 h5">
+        Order date
+      </div>
+      <div class="col-sm-1 h5">
+        Status
+      </div>
+    </div>
+    <hr class="my-1">
+    {% for order in orders %}
+    <div class="row order-list-row" data-order_id="{{ order.id }}" data-username="{{ order.user.username }}" data-completed="{{ order.is_completed }}">
+      <div class="col-sm-1">
+        <a href="{% url 'orders:orders' order.id %}">{{ order.id }}</a>
+      </div>
+      {% if request.user.is_superuser %}
+      <div class="col-sm-2">
+        {{ order.user.username }}
+      </div>
+      {% endif %}
+      <div class="col-sm-3">
+        {{ order.order_date }}
+      </div>
+      <div class="col-sm-1 text-center">
+        {% if order.is_completed %}
+        <img src="{% static 'check.png' %}" alt="completed" style="width:24px;">
+        {% else %}
+        <img src="{% static 'preparation.png' %}" alt="preparation" style="width:24px;">
+        {% endif %}
+      </div>
+      {% if request.user.is_superuser %}
+      <div class="col-sm-2">
+        {% if order.is_completed %}
+        <button class="btn btn-secondary btn-sm my-1 mark-button" type="button" data-order_id="{{ order.id }}" data-action="mark_as_pending">Mark as pending</button>
+        {% else %}
+        <button class="btn btn-primary btn-sm my-1 mark-button" type="button" data-order_id="{{ order.id }}" data-action="mark_as_completed">Mark as completed</button>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+{% if request.user.is_superuser %}
+</form>
+{% endif %}
+{% endblock %}
