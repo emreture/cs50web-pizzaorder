@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const TIMEOUT = 5000;
+  const TIMEOUT = 30000;
 
   function showModal(title, message) {
     const modalInfo = document.querySelector('#modal-info');

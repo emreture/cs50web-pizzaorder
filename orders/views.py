@@ -91,10 +91,16 @@ def add_to_cart(request):
     item.price = menu_item.price
     item.save()
     for i in toppings_list:
-        topping = Topping.objects.get(pk=i)
+        try:
+            topping = Topping.objects.get(pk=i)
+        except Topping.DoesNotExist:
+            return JsonResponse({'success': False, 'message': "Topping doesn't exist."}, status=400)
         item.toppings.add(topping)
     for i in sub_additions_list:
-        sub_addition = SubAddition.objects.get(pk=i)
+        try:
+            sub_addition = SubAddition.objects.get(pk=i)
+        except SubAddition.DoesNotExist:
+            return JsonResponse({'success': False, 'message': "Sub addition doesn't exist."}, status=400)
         item.sub_additions.add(sub_addition)
         item.price += sub_addition.price
     item.save()
@@ -108,8 +114,11 @@ def cart(request):
     if form:
         item_id = form.get('remove_item', None)
         if item_id:
-            cart_item = Cart.objects.get(pk=item_id)
-            cart_item.delete()
+            try:
+                cart_item = Cart.objects.get(pk=item_id)
+                cart_item.delete()
+            except Cart.DoesNotExist:
+                pass
 
     context = {
         "cart_items_count": Cart.objects.filter(user=request.user).count(),
@@ -124,25 +133,26 @@ def cart(request):
 def checkout(request):
     if request.method == "POST":
         cart_items = Cart.objects.filter(user=request.user)
-        new_order = Order()
-        new_order.user = request.user
-        new_order.is_completed = False
-        new_order.save()
-        for cart_item in cart_items:
-            order_item = OrderItem()
-            order_item.order = new_order
-            order_item.menu_item = cart_item.menu_item
-            order_item.save()
-            for topping in cart_item.toppings.all():
-                order_item.toppings.add(topping)
-            for sub_addition in cart_item.sub_additions.all():
-                order_item.sub_additions.add(sub_addition)
-            order_item.save()
-            cart_item.delete()
-        context = {
-            "order_no": new_order.id
-        }
-        return render(request, "orders/order-receipt.html", context)
+        if cart_items.count() > 0:
+            new_order = Order()
+            new_order.user = request.user
+            new_order.is_completed = False
+            new_order.save()
+            for cart_item in cart_items:
+                order_item = OrderItem()
+                order_item.order = new_order
+                order_item.menu_item = cart_item.menu_item
+                order_item.save()
+                for topping in cart_item.toppings.all():
+                    order_item.toppings.add(topping)
+                for sub_addition in cart_item.sub_additions.all():
+                    order_item.sub_additions.add(sub_addition)
+                order_item.save()
+                cart_item.delete()
+            context = {
+                "order_no": new_order.id
+            }
+            return render(request, "orders/order-receipt.html", context)
     context = {
         "cart_items_count": Cart.objects.filter(user=request.user).count(),
         "cart_items": Cart.objects.filter(user=request.user),
@@ -224,37 +234,4 @@ def re_order(request):
             _cart.sub_additions.add(sub_addition)
             _cart.price += sub_addition.price
         _cart.save()
-
-    # form = request.POST
-    # order_id = form.get("order_id")
-    # _order = Order.objects.get(pk=order_id)
-    # order_items = OrderItem.objects.filter(order=_order)
-    # new_order = Order()
-    # new_order.user = request.user
-    # new_order.is_completed = False
-    # new_order.save()
-    # for item in order_items:
-    #     order_item = OrderItem()
-    #     order_item.order = new_order
-    #     order_item.menu_item = item.menu_item
-    #     order_item.save()
-    #     for topping in item.toppings.all():
-    #         order_item.toppings.add(topping)
-    #     for sub_addition in item.sub_additions.all():
-    #         order_item.sub_additions.add(sub_addition)
-    #     order_item.save()
-    #     print(item, "->", order_item)
-    # context = {
-    #     "order_no": new_order.id
-    # }
-    # return render(request, "orders/order-receipt.html", context)
-
-    # context = {
-    #     "cart_items_count": Cart.objects.filter(user=request.user).count(),
-    #     "cart_items": Cart.objects.filter(user=request.user),
-    #     "cart_cost": Cart.objects.filter(user=request.user).aggregate(Sum('price')),
-    #     "remove_button": False
-    # }
-    # return render(request, "orders/checkout.html", context)
-
     return redirect("orders:checkout")
